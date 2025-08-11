@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Checker - HCMS</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover-color: #4338ca;
+            --background-color: #f3f4f6;
+            --card-background-color: #ffffff;
+            --text-color-primary: #1f2937;
+            --text-color-secondary: #6b7280;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --error-bg: #fee2e2;
+            --error-text: #991b1b;
+        }
+        
+        body {
+            font-family: sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            color: #1f2937;
+            transition: all 0.3s ease;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 28rem;
+            background-color: var(--card-background-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: auto;
+        }
+        
+        .header {
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .header .header-content {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color-primary);
+            margin: 0;
+        }
+
+        .header nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header nav a {
+            color: var(--text-color-secondary);
+            transition: color 200ms ease-in-out;
+            text-decoration: none;
+        }
+
+        .header nav a:hover {
+            color: var(--text-color-primary);
+        }
+
+        .header nav button {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: var(--text-color-secondary);
+        }
+
+        .header nav button:hover {
+            color: var(--text-color-primary);
+        }
+
+        .main-content {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        .main-content h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-color-primary);
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-color-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .input-group input, .input-group textarea {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            font-size: 1rem;
+            color: var(--text-color-primary);
+            background-color: #ffffff;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color), 0 0 0 2px rgba(99, 102, 241, 0.5);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: var(--primary-color);
+            transition: background-color 200ms ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover-color);
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>HCMS</h1>
+            <nav>
+                <a href="staff-dashboard.html">Dashboard</a>
+                <a href="patient-portal.html">Patient Portal</a>
+                <a href="inventory.html">Inventory</a>
+                <a href="symptom-checker.html">Symptom Checker</a>
+                <a href="index.html">Log-Out</a>
+                <button id="dark-mode-toggle" class="dark-mode-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="px-4 py-6">
+            <h2>Symptom Checker</h2>
+            <div class="form-container">
+                <form class="form-group">
+                    <div class="input-group">
+                        <label for="symptoms">Describe your symptoms:</label>
+                        <textarea id="symptoms" name="symptoms" rows="4" placeholder="e.g., 'I have a sore throat, cough, and a fever.'"></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Check Symptoms</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
