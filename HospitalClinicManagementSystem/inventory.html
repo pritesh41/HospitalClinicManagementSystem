@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management - HCMS</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover-color: #4338ca;
+            --background-color: #f3f4f6;
+            --card-background-color: #ffffff;
+            --text-color-primary: #1f2937;
+            --text-color-secondary: #6b7280;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --error-bg: #fee2e2;
+            --error-text: #991b1b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color-primary);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            --background-color: #1f2937;
+            --card-background-color: #374151;
+            --text-color-primary: #f3f4f6;
+            --text-color-secondary: #d1d5db;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 28rem;
+            background-color: var(--card-background-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: auto;
+        }
+
+        .header {
+            background-color: var(--card-background-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .header .header-content {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color-primary);
+            margin: 0;
+        }
+
+        .header nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header nav a {
+            color: var(--text-color-secondary);
+            transition: color 200ms ease-in-out;
+            text-decoration: none;
+        }
+
+        .header nav a:hover {
+            color: var(--text-color-primary);
+        }
+
+        .header nav button {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: var(--text-color-secondary);
+        }
+
+        .header nav button:hover {
+            color: var(--text-color-primary);
+        }
+
+        .main-content {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .main-content h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-color-primary);
+        }
+        
+        .add-item-form-container {
+            background-color: var(--card-background-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-item-form h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            background-color: var(--background-color);
+            color: var(--text-color-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: 2px solid var(--primary-color);
+            border-color: transparent;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        .table-container {
+            background-color: var(--card-background-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background-color: #f9fafb;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1rem;
+        }
+
+        .status-badge.green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.yellow {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.red {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .dark-mode-toggle {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            color: #6b7280;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dark-mode-toggle svg {
+            height: 1.5rem;
+            width: 1.5rem;
+            stroke: currentColor;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>HCMS</h1>
+            <nav>
+                <a href="staff-dashboard.html">Dashboard</a>
+                <a href="patient-portal.html">Patient Portal</a>
+                <a href="inventory.html">Inventory</a>
+                <a href="symptom-checker.html">Symptom Checker</a>
+                <a href="index.html">Log-Out</a>
+                <button id="dark-mode-toggle" class="dark-mode-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div>
+            <h2>Inventory Management</h2>
+            
+            <!-- Form to add new inventory items -->
+            <div class="add-item-form-container">
+                <form id="add-item-form" class="add-item-form">
+                    <h3>Add New Item</h3>
+                    <div class="form-group">
+                        <label for="item-name">Item Name:</label>
+                        <input type="text" id="item-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-quantity">Quantity:</label>
+                        <input type="number" id="item-quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-status">Status:</label>
+                        <select id="item-status" required>
+                            <option value="green">In Stock</option>
+                            <option value="yellow">Low Stock</option>
+                            <option value="red">Out of Stock</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">Add Item</button>
+                </form>
+            </div>
+
+            <!-- Inventory table -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body">
+                        <tr>
+                            <td>ITM001</td>
+                            <td>Syringe, 10ml</td>
+                            <td>250</td>
+                            <td><span class="status-badge green">In Stock</span></td>
+                        </tr>
+                        <tr>
+                            <td>ITM002</td>
+                            <td>Bandage, Sterile</td>
+                            <td>120</td>
+                            <td><span class="status-badge green">In Stock</span></td>
+                        </tr>
+                        <tr>
+                            <td>ITM003</td>
+                            <td>Latex Gloves, Large</td>
+                            <td>50</td>
+                            <td><span class="status-badge yellow">Low Stock</span></td>
+                        </tr>
+                        <tr>
+                            <td>ITM004</td>
+                            <td>Pain Relievers, 500mg</td>
+                            <td>15</td>
+                            <td><span class="status-badge red">Out of Stock</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Get references to the form and table body
+        const addItemForm = document.getElementById('add-item-form');
+        const inventoryTableBody = document.getElementById('inventory-table-body');
+        
+        // Add a submit event listener to the form
+        addItemForm.addEventListener('submit', (e) => {
+            // Prevent the default form submission behavior
+            e.preventDefault();
+
+            // Get values from the form inputs
+            const itemName = document.getElementById('item-name').value;
+            const itemQuantity = document.getElementById('item-quantity').value;
+            const itemStatus = document.getElementById('item-status').value;
+
+            // Check if any fields are empty
+            if (!itemName || !itemQuantity) {
+                // In a real application, you'd show an error message to the user here.
+                console.error("All fields must be filled out.");
+                return;
+            }
+
+            // Get the current number of rows to generate a new item ID
+            const newIdNumber = inventoryTableBody.rows.length + 1;
+            const newItemId = `ITM${String(newIdNumber).padStart(3, '0')}`;
+            
+            // Create a new table row element
+            const newRow = document.createElement('tr');
+            
+            // Create table cells for the new item's data
+            const idCell = document.createElement('td');
+            idCell.textContent = newItemId;
+            
+            const nameCell = document.createElement('td');
+            nameCell.textContent = itemName;
+
+            const quantityCell = document.createElement('td');
+            quantityCell.textContent = itemQuantity;
+            
+            const statusCell = document.createElement('td');
+            const statusBadge = document.createElement('span');
+            statusBadge.classList.add('status-badge', itemStatus);
+            
+            // Set the text for the status badge based on the selected value
+            if (itemStatus === 'green') {
+                statusBadge.textContent = 'In Stock';
+            } else if (itemStatus === 'yellow') {
+                statusBadge.textContent = 'Low Stock';
+            } else {
+                statusBadge.textContent = 'Out of Stock';
+            }
+            statusCell.appendChild(statusBadge);
+
+            // Append the new cells to the new row
+            newRow.appendChild(idCell);
+            newRow.appendChild(nameCell);
+            newRow.appendChild(quantityCell);
+            newRow.appendChild(statusCell);
+            
+            // Append the new row to the table body
+            inventoryTableBody.appendChild(newRow);
+            
+            // Reset the form for the next entry
+            addItemForm.reset();
+        });
+
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+        });
+
+    </script>
+
+</body>
+</html>
