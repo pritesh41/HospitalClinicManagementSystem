@@ -19,14 +19,21 @@
         }
 
         body {
-            font-family: sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--background-color);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
-            color: #1f2937;
+            color: var(--text-color-primary);
             transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            --background-color: #1f2937;
+            --card-background-color: #374151;
+            --text-color-primary: #f3f4f6;
+            --text-color-secondary: #d1d5db;
         }
 
         .main-container {
@@ -43,7 +50,7 @@
         }
 
         .header {
-            background-color: #ffffff;
+            background-color: var(--card-background-color);
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             padding: 1rem;
             text-align: center;
@@ -107,8 +114,63 @@
             color: var(--text-color-primary);
         }
         
+        .add-item-form-container {
+            background-color: var(--card-background-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-item-form h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            background-color: var(--background-color);
+            color: var(--text-color-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: 2px solid var(--primary-color);
+            border-color: transparent;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
         .table-container {
-            background-color: #ffffff;
+            background-color: var(--card-background-color);
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             border-radius: 0.5rem;
             overflow: hidden;
@@ -122,7 +184,7 @@
         .data-table thead {
             background-color: #f9fafb;
         }
-        
+
         .data-table th, .data-table td {
             padding: 0.75rem 1.5rem;
             text-align: left;
@@ -137,7 +199,7 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        
+
         .data-table td {
             color: #1f2937;
             font-weight: 500;
@@ -179,7 +241,7 @@
             border: none;
             cursor: pointer;
         }
-        
+
         .dark-mode-toggle:hover {
             background-color: #f3f4f6;
         }
@@ -190,7 +252,6 @@
             stroke: currentColor;
             fill: none;
         }
-
     </style>
 </head>
 <body>
@@ -216,6 +277,32 @@
     <main class="main-content">
         <div>
             <h2>Inventory Management</h2>
+            
+            <!-- Form to add new inventory items -->
+            <div class="add-item-form-container">
+                <form id="add-item-form" class="add-item-form">
+                    <h3>Add New Item</h3>
+                    <div class="form-group">
+                        <label for="item-name">Item Name:</label>
+                        <input type="text" id="item-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-quantity">Quantity:</label>
+                        <input type="number" id="item-quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-status">Status:</label>
+                        <select id="item-status" required>
+                            <option value="green">In Stock</option>
+                            <option value="yellow">Low Stock</option>
+                            <option value="red">Out of Stock</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">Add Item</button>
+                </form>
+            </div>
+
+            <!-- Inventory table -->
             <div class="table-container">
                 <table class="data-table">
                     <thead>
@@ -226,7 +313,7 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="inventory-table-body">
                         <tr>
                             <td>ITM001</td>
                             <td>Syringe, 10ml</td>
@@ -256,6 +343,82 @@
             </div>
         </div>
     </main>
+    
+    <script>
+        // Get references to the form and table body
+        const addItemForm = document.getElementById('add-item-form');
+        const inventoryTableBody = document.getElementById('inventory-table-body');
+        
+        // Add a submit event listener to the form
+        addItemForm.addEventListener('submit', (e) => {
+            // Prevent the default form submission behavior
+            e.preventDefault();
+
+            // Get values from the form inputs
+            const itemName = document.getElementById('item-name').value;
+            const itemQuantity = document.getElementById('item-quantity').value;
+            const itemStatus = document.getElementById('item-status').value;
+
+            // Check if any fields are empty
+            if (!itemName || !itemQuantity) {
+                // In a real application, you'd show an error message to the user here.
+                console.error("All fields must be filled out.");
+                return;
+            }
+
+            // Get the current number of rows to generate a new item ID
+            const newIdNumber = inventoryTableBody.rows.length + 1;
+            const newItemId = `ITM${String(newIdNumber).padStart(3, '0')}`;
+            
+            // Create a new table row element
+            const newRow = document.createElement('tr');
+            
+            // Create table cells for the new item's data
+            const idCell = document.createElement('td');
+            idCell.textContent = newItemId;
+            
+            const nameCell = document.createElement('td');
+            nameCell.textContent = itemName;
+
+            const quantityCell = document.createElement('td');
+            quantityCell.textContent = itemQuantity;
+            
+            const statusCell = document.createElement('td');
+            const statusBadge = document.createElement('span');
+            statusBadge.classList.add('status-badge', itemStatus);
+            
+            // Set the text for the status badge based on the selected value
+            if (itemStatus === 'green') {
+                statusBadge.textContent = 'In Stock';
+            } else if (itemStatus === 'yellow') {
+                statusBadge.textContent = 'Low Stock';
+            } else {
+                statusBadge.textContent = 'Out of Stock';
+            }
+            statusCell.appendChild(statusBadge);
+
+            // Append the new cells to the new row
+            newRow.appendChild(idCell);
+            newRow.appendChild(nameCell);
+            newRow.appendChild(quantityCell);
+            newRow.appendChild(statusCell);
+            
+            // Append the new row to the table body
+            inventoryTableBody.appendChild(newRow);
+            
+            // Reset the form for the next entry
+            addItemForm.reset();
+        });
+
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+        });
+
+    </script>
 
 </body>
 </html>

@@ -19,16 +19,23 @@
         }
 
         body {
-            font-family: sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--background-color);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
-            color: #1f2937;
+            color: var(--text-color-primary);
             transition: all 0.3s ease;
         }
 
+        .dark-mode {
+            --background-color: #1f2937;
+            --card-background-color: #374151;
+            --text-color-primary: #f3f4f6;
+            --text-color-secondary: #d1d5db;
+        }
+        
         .main-container {
             width: 100%;
             max-width: 28rem;
@@ -43,7 +50,7 @@
         }
         
         .header {
-            background-color: #ffffff;
+            background-color: var(--card-background-color);
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             padding: 1rem;
             text-align: center;
@@ -120,22 +127,138 @@
         }
         
         .card {
-            background-color: #ffffff;
+            background-color: var(--card-background-color);
             padding: 1.5rem;
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card h3 {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #1f2937;
+            color: var(--text-color-primary);
         }
         
         .card p {
-            color: #6b7280;
+            color: var(--text-color-secondary);
             line-height: 1.5rem;
+        }
+        
+        .dark-mode-toggle {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            color: #6b7280;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .dark-mode-toggle:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dark-mode-toggle svg {
+            height: 1.5rem;
+            width: 1.5rem;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        /* Styles for the new form and table */
+        .add-item-form-container {
+            background-color: var(--card-background-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-item-form h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            background-color: var(--background-color);
+            color: var(--text-color-primary);
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        .table-container {
+            background-color: var(--card-background-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background-color: #f9fafb;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f3f4f6;
         }
     </style>
 </head>
@@ -162,6 +285,53 @@
     <main class="main-content">
         <div class="px-4 py-6">
             <h2>Staff Dashboard</h2>
+            
+            <!-- Form to insert new appointments -->
+            <div class="add-item-form-container">
+                <form id="add-appointment-form" class="add-item-form">
+                    <h3>Add New Appointment</h3>
+                    <div class="form-group">
+                        <label for="patient-name">Patient Name:</label>
+                        <input type="text" id="patient-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="doctor">Doctor:</label>
+                        <input type="text" id="doctor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Time:</label>
+                        <input type="time" id="time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointment-status">Status:</label>
+                        <select id="appointment-status" required>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Canceled">Canceled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">Add Appointment</button>
+                </form>
+            </div>
+
+            <!-- Table to display appointments -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Doctor</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointments-table-body">
+                        <!-- New rows will be added here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Original dashboard cards are still present -->
             <div class="card-grid">
                 <div class="card">
                     <h3>Recent Appointments</h3>
@@ -179,9 +349,54 @@
                     <h3>System Alerts</h3>
                     <p>Monitor critical system alerts and notifications for any issues.</p>
                 </div>
+                <div class="card">
+                    <h3>Billing and Invoices</h3>
+                    <p>Manage patient billing, create new invoices, and track payment history.</p>
+                </div>
             </div>
         </div>
     </main>
 
+    <script>
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+        });
+
+        // Functionality for adding appointments to the table
+        const addAppointmentForm = document.getElementById('add-appointment-form');
+        const appointmentsTableBody = document.getElementById('appointments-table-body');
+
+        addAppointmentForm.addEventListener('submit', (event) => {
+            // Prevent the default form submission that reloads the page
+            event.preventDefault();
+
+            // Get values from the form inputs
+            const patientName = document.getElementById('patient-name').value;
+            const doctor = document.getElementById('doctor').value;
+            const time = document.getElementById('time').value;
+            const status = document.getElementById('appointment-status').value;
+
+            // Create a new table row element
+            const newRow = document.createElement('tr');
+
+            // Set the inner HTML of the new row with the data
+            newRow.innerHTML = `
+                <td>${patientName}</td>
+                <td>${doctor}</td>
+                <td>${time}</td>
+                <td>${status}</td>
+            `;
+
+            // Append the new row to the table body
+            appointmentsTableBody.appendChild(newRow);
+
+            // Clear the form fields for the next entry
+            addAppointmentForm.reset();
+        });
+    </script>
 </body>
 </html>
